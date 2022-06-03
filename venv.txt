@@ -1,0 +1,1 @@
+source ~/.virtualenvs/lebenInDeutschland/bin/activate
