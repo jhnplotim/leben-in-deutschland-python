@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User, Group
-from quickstart.models import State
+from quickstart.models import State, Answer, Question
 from rest_framework import serializers
 
 
@@ -17,5 +17,16 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class StateSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = State
-        fields = ['url', 'id', 'name', 'icon', 'added']
+        fields = ['url', 'name', 'code', 'icon', 'added']
+
+class AnswerSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Answer
+        fields = ['id', 'text', 'is_correct', 'question']
+
+class QuestionSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Question
+        fields = ['id', 'text', 'image', 'state']
+
 

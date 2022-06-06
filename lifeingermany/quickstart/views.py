@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User, Group
-from quickstart.models import State
+from quickstart.models import State, Answer, Question
 from rest_framework import viewsets
 from rest_framework import permissions
-from quickstart.serializers import UserSerializer, GroupSerializer, StateSerializer
+from quickstart.serializers import UserSerializer, GroupSerializer, StateSerializer, AnswerSerializer, QuestionSerializer
 
 
 # Create your views here.
@@ -33,3 +33,21 @@ class StateViewSet(viewsets.ModelViewSet):
     queryset = State.objects.all()
     serializer_class = StateSerializer
     permission_classes = [permissions.DjangoModelPermissions]
+
+class QuestionViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Questions to be viewed or edited.
+    """
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+    permission_classes = [permissions.DjangoModelPermissions]
+
+
+class AnswerViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Answers to be viewed or edited.
+    """
+    queryset = Answer.objects.all()
+    serializer_class = AnswerSerializer
+    permission_classes = [permissions.DjangoModelPermissions]
+
