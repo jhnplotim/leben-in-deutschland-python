@@ -4,6 +4,9 @@ from django.utils.html import format_html
 
 # Register your models here.
 
+class AnswerInline(admin.StackedInline):
+    model = Answer
+
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
     def image_tag(self, obj):
@@ -29,6 +32,11 @@ class QuestionAdmin(admin.ModelAdmin):
 
     list_display = ['text','image_tag', 'state', 'answer_count', 'correct_count']
 
+    inlines = [AnswerInline]
+
+
+class QuestionInline(admin.StackedInline):
+    model = Question
 
 
 @admin.register(State)
@@ -51,6 +59,8 @@ class StateAdmin(admin.ModelAdmin):
     question_count.short_description = 'Questions'
 
     list_display = ['name_code','image_tag', 'question_count', 'added']
+
+    inlines = [QuestionInline]
 
 
 @admin.register(Answer)
