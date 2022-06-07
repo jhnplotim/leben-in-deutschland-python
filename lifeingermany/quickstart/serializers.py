@@ -17,7 +17,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class StateSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = State
-        fields = ['url', 'name', 'code', 'icon', 'added']
+        fields = ['id', 'url', 'name', 'code', 'icon', 'added']
 
 class AnswerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

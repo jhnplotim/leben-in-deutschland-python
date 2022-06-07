@@ -30,7 +30,7 @@ class StateViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows States to be viewed or edited.
     """
-    queryset = State.objects.all()
+    queryset = State.objects.all().order_by('-added')
     serializer_class = StateSerializer
     permission_classes = [permissions.DjangoModelPermissions]
 
