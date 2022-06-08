@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User, Group
-from quickstart.models import State, Answer, Question
+from quickstart.models import State, StateIcon, Answer, Question, QuestionImage
 from rest_framework import serializers
 
 
@@ -28,5 +28,15 @@ class QuestionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Question
         fields = ['id', 'text', 'image', 'state']
+        
+class QuestionImageSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = QuestionImage
+        fields = ['id', 'data_base64_string']
+        
+class StateIconSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = StateIcon
+        fields = ['id', 'data_base64_string']
 
 

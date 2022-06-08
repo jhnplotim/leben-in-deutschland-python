@@ -1,5 +1,5 @@
 from django.contrib import admin
-from quickstart.models import State, Question, Answer
+from quickstart.models import State, Question, Answer, QuestionImage, StateIcon
 from django.utils.html import format_html
 
 # Register your models here.
@@ -10,8 +10,8 @@ class AnswerInline(admin.StackedInline):
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
     def image_tag(self, obj):
-        if obj.image and hasattr(obj.image, 'url'):
-            html_string = f'<img src="{obj.image.url}" width="30" height="30" />'
+        if obj.image and hasattr(obj.image, 'data_base64_string'):
+            html_string = f'<img src="data: image/png; base64, {obj.image.data_base64_string}" width="30" height="30" />'
             return format_html(html_string)
         else:
             image = '-'
@@ -46,7 +46,7 @@ class StateAdmin(admin.ModelAdmin):
         return f'{obj.name} ({obj.code})'
 
     def image_tag(self, obj):
-        html_string = f'<img src="{obj.icon.url}" width="30" height="30" />'
+        html_string = f'<img src="data: image/png; base64, {obj.icon.data_base64_string}" width="30" height="30" />'
         return format_html(html_string)
 
     def question_count(self, obj):
@@ -66,3 +66,39 @@ class StateAdmin(admin.ModelAdmin):
 @admin.register(Answer)
 class AnswerAdmin(admin.ModelAdmin):
     list_display = ['text', 'is_correct', 'question']
+    
+@admin.register(StateIcon)
+class StateIconAdmin(admin.ModelAdmin):
+    def scheme_image_tag(self, obj):
+        img = obj.data_base64_string
+        html_string = f'<img src = "data: image/png; base64, {img}" width="30" height="30" />'
+        return format_html(html_string)
+
+    scheme_image_tag.short_description = 'Image'
+    scheme_image_tag.allow_tags = True
+    
+    def img_name(self, obj):
+        return obj.path.name
+    
+    img_name.short_description = 'Name'
+    
+    list_display = ['img_name', 'scheme_image_tag']
+    
+    
+@admin.register(QuestionImage)
+class QuestionImageAdmin(admin.ModelAdmin):
+    def scheme_image_tag(self, obj):
+        img = obj.data_base64_string
+        html_string = f'<img src = "data: image/png; base64, {img}" width="30" height="30" />'
+        return format_html(html_string)
+
+    scheme_image_tag.short_description = 'Image'
+    scheme_image_tag.allow_tags = True
+    
+    def img_name(self, obj):
+        return obj.path.name
+    
+    img_name.short_description = 'Name'
+    
+    list_display = ['img_name', 'scheme_image_tag']
+    

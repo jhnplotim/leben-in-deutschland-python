@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User, Group
-from quickstart.models import State, Answer, Question
+from quickstart.models import State, Answer, Question, QuestionImage, StateIcon
 from rest_framework import viewsets
 from rest_framework import permissions
-from quickstart.serializers import UserSerializer, GroupSerializer, StateSerializer, AnswerSerializer, QuestionSerializer
+from quickstart.serializers import UserSerializer, GroupSerializer, StateSerializer, StateIconSerializer, AnswerSerializer, QuestionSerializer, QuestionImageSerializer
 
 
 # Create your views here.
@@ -33,6 +33,14 @@ class StateViewSet(viewsets.ModelViewSet):
     queryset = State.objects.all().order_by('-added')
     serializer_class = StateSerializer
     permission_classes = [permissions.DjangoModelPermissions]
+    
+class StateIconViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows State icons to be viewed or edited.
+    """
+    queryset = StateIcon.objects.all()
+    serializer_class = StateIconSerializer
+    permission_classes = [permissions.DjangoModelPermissions]
 
 class QuestionViewSet(viewsets.ModelViewSet):
     """
@@ -40,6 +48,15 @@ class QuestionViewSet(viewsets.ModelViewSet):
     """
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
+    permission_classes = [permissions.DjangoModelPermissions]
+    
+    
+class QuestionImageViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Question Images to be viewed or edited.
+    """
+    queryset = QuestionImage.objects.all()
+    serializer_class = QuestionImageSerializer
     permission_classes = [permissions.DjangoModelPermissions]
 
 
