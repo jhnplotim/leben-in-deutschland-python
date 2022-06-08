@@ -1,0 +1,58 @@
+source ~/.virtualenvs/lebenInDeutschland/bin/activate
+
+// 1. Create postgresql database
+initdb --locale=C -E UTF-8 /opt/homebrew/var/postgres
+
+// 2. Manually Start Postgres Database Server
+pg_ctl -D /opt/homebrew/var/postgres start
+
+// 3. Configuring postgresql
+psql postgres 
+OR
+sudo psql postgres
+
+// 4. Adding a user
+postgres=# CREATE USER username WITH PASSWORD ‘password’;
+
+// 5. Creating a database
+postgres=# CREATE DATABASE dbname;
+
+// 6. Grant Access to User
+postgres=# GRANT ALL PRIVILEGES ON DATABASE dbname to username;
+
+// 7. Install the psycopg2 PostgreSQL adapter for Python by running this command in terminal in your project directory
+pip install psycopg2-binary
+
+// 8. Update INSTALLED_APPS in settings.py
+INSTALLED_APPS = [ # …
+
+‘django.contrib.postgres’,
+
+]
+// 9. Edit the settings.py File of Your Django Project
+
+Modify the DATABASES setting as:
+
+DATABASES = {
+
+‘default’ : {
+
+‘ENGINE’: ‘django.db.backends.postgresql’,
+
+‘NAME’: ‘dbname’,
+
+‘USER’: ‘username’,
+
+‘PASSWORD’: ‘password’
+
+}}
+
+// 10. Apply All Database Migration
+
+python manage.py migrate
+
+// 11. You can now run the development server
+python manage.py runserver
+
+// 12. At the end of your work you can stop postgresql server using the following:
+ pg_ctl -D /opt/homebrew/var/postgres stop
