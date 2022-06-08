@@ -34,7 +34,7 @@ class Question(models.Model):
 
 
 class Answer(models.Model):
-    id = models.AutoField
+    id = models.AutoField(primary_key=True)
     text = models.TextField(blank=False, null=False)
     is_correct = models.BooleanField(default=False, null=False, blank=False)
     question = models.ForeignKey(Question, on_delete=models.CASCADE, null=False, blank=False)
