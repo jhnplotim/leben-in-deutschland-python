@@ -1,5 +1,4 @@
-from models import State, StateIcon
-
+from quickstart.models import State
 from celery import shared_task
 
 @shared_task
