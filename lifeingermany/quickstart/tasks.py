@@ -10,20 +10,6 @@ class DownloadType(IntEnum):
     STATE = 0
     NO_STATE = 1
 
-@shared_task
-def add(x, y):
-    return x + y
-
-
-@shared_task
-def mul(x, y):
-    return x * y
-
-
-@shared_task
-def xsum(numbers):
-    return sum(numbers)
-
 
 @shared_task
 def count_states():
@@ -273,3 +259,67 @@ def create_question(imageId, text, stateId):
     else:
         print(f"Question text with value {text} is corrupted")
         return None
+
+@shared_task    
+def populate_database():
+    # Empty DB
+    # Delete State Icons, will delete all States, their Questions and Answers
+    StateIcon.objects.all().delete()
+    
+    # Delete remaining data i.e. QuestionImages, Questions and Answers that do not belong to states
+    QuestionImage.objects.all().delete()
+    Question.objects.all().delete()
+    
+    from celery import group
+    from celery.result import allow_join_result
+    with allow_join_result():
+        gr = group(download_others.s(), download_states.s())
+        return gr().get()
+    
+ 
+@shared_task    
+def download_states():
+    try:
+        statesList = [
+                  ("bw", "Baden-Württemberg"),
+                  ("by", "Bayern"),
+                  ("be", "Berlin"),
+                  ("bb", "Brandenburg"),
+                  ("hb", "Bremen"),
+                  ("hh", "Hamburg"),
+                  ("he", "Hessen"),
+                  ("mv", "Mecklenburg-Vorpommern"),
+                  ("ni", "Niedersachsen"),
+                  ("nw", "Nordrhein-Westfalen"),
+                  ("rp", "Rheinland-Pfalz"),
+                  ("sl", "Saarland"),
+                  ("sn", "Sachsen"),
+                  ("st", "Sachsen-Anhalt"),
+                  ("sh", "Schleswig-Holstein"),
+                  ("th", "Thüringen"),
+                  ]
+        for statetuple in statesList:
+            download_page(DownloadType.STATE, statetuple[0], statetuple[1])
+            import time
+            time.sleep(2)
+            
+        return True
+            
+    except Exception as e:
+        print(e)
+        return False
+ 
+@shared_task    
+def download_others():
+    try:
+        for pageId in range(1,11,1):
+            download_page(DownloadType.NO_STATE, pageId)
+            import time
+            time.sleep(2)
+            
+        return True
+    
+    except Exception as e:
+        print(e)
+        return False
+        
