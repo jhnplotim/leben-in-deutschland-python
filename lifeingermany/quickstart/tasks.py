@@ -72,7 +72,7 @@ def download_image(url, imageTypeValue):
         else:
             return None
     else:
-        print("Invalid image type requested OR url is None")
+        print(f"Invalid image type ({imageTypeValue}) requested OR url ({url}) is None")
         return None
     
     
