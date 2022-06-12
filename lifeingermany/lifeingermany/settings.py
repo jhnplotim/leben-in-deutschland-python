@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'rest_framework',
     'quickstart',
+    'django_celery_results',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -136,3 +139,23 @@ REST_FRAMEWORK = {
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# django setting.
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'my_cache_table',
+    }
+}
+
+# Celery Configuration Options
+CELERY_TIMEZONE = "Europe/Berlin"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_CACHE_BACKEND = 'default'
+CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+AMQP_PORT = '5672'
+AMQP_HOST = 'localhost'
+# for Heroku
+CELERY_BROKER_URL = os.environ.get('AMQP_URL', 'amqp://' + AMQP_HOST + ':' + AMQP_PORT + '//')
