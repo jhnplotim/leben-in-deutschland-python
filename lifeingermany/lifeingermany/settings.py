@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 import os
 
+from decouple import config
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,10 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ydv)6$7-0$x#7%sb_rp85o3l6bks233-2oa_09wlztiu8317sb'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = []
 
@@ -43,6 +45,7 @@ INSTALLED_APPS = [
     'quickstart',
     'django_celery_results',
     'django_celery_beat',
+    'storages'
 ]
 
 MIDDLEWARE = [
@@ -82,11 +85,11 @@ WSGI_APPLICATION = 'lifeingermany.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'db_linde',
-        'USER': 'user_linde',
-        'PASSWORD': 'user_linde',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT'),
     }
 }
 
@@ -113,13 +116,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = config('LANGUAGE_CODE', default='en-us')
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = config('TIME_ZONE', default='UTC')
 
-USE_I18N = True
+USE_I18N = config('USE_I18N', default=True, cast=bool)
 
-USE_TZ = True
+USE_TZ = config('USE_TZ', default=True, cast=bool)
 
 
 # Static files (CSS, JavaScript, Images)
@@ -134,7 +137,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': config('REST_FRAMEWORK_PAGE_SIZE', default=10, cast=int)
 }
 
 MEDIA_URL = "/media/"
@@ -149,16 +152,18 @@ CACHES = {
 }
 
 # Celery Configuration Options
-CELERY_TIMEZONE = "Europe/Berlin"
+CELERY_TIMEZONE = config('CELERY_TIMEZONE', default='Europe/Berlin')
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'default'
 CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
-AMQP_PORT = '5672'
-AMQP_HOST = 'localhost'
+# Non heroku AMQP e.g. Local one, used if AMQP_URL environment variable on Heroku is not configured
+OTHER_AMQP_PORT = config('OTHER_AMQP_PORT', default='5672')
+OTHER_AMQP_HOST = config('OTHER_AMQP_HOST', default='localhost')
+OTHER_AMQP_URL = 'amqp://' + OTHER_AMQP_HOST + ':' + OTHER_AMQP_PORT + '//'
 # for Heroku
-CELERY_BROKER_URL = os.environ.get('AMQP_URL', 'amqp://' + AMQP_HOST + ':' + AMQP_PORT + '//')
+CELERY_BROKER_URL = config('AMQP_URL', default=OTHER_AMQP_URL)
 
 # Heroku: Update database configuration from $DATABASE_URL. 
 import dj_database_url 
