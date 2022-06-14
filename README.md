@@ -1,7 +1,7 @@
 # leben-in-deutschland-python
 Django app for managing the backend of the leben in deutschland mobile app
 
-**NOTE**: 
+**NOTE:**
 
 - The project contains the following important setup files: _requirements.text_, _runtime.txt_.
 These two files define the python environment used and the respective libraries used in the project.
