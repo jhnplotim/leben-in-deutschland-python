@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os
+from decouple import config, Csv
+import django_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,12 +23,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ydv)6$7-0$x#7%sb_rp85o3l6bks233-2oa_09wlztiu8317sb'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 
 
 # Application definition
@@ -43,6 +45,7 @@ INSTALLED_APPS = [
     'quickstart',
     'django_celery_results',
     'django_celery_beat',
+    'storages'
 ]
 
 MIDDLEWARE = [
@@ -82,11 +85,11 @@ WSGI_APPLICATION = 'lifeingermany.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'db_linde',
-        'USER': 'user_linde',
-        'PASSWORD': 'user_linde',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT'),
     }
 }
 
@@ -113,19 +116,14 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = config('LANGUAGE_CODE', default='en-us')
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = config('TIME_ZONE', default='UTC')
 
-USE_I18N = True
+USE_I18N = config('USE_I18N', default=True, cast=bool)
 
-USE_TZ = True
+USE_TZ = config('USE_TZ', default=True, cast=bool)
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.0/howto/static-files/
-
-STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -134,11 +132,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': config('REST_FRAMEWORK_PAGE_SIZE', default=10, cast=int)
 }
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / 'media'
 
 # django setting.
 CACHES = {
@@ -149,13 +145,93 @@ CACHES = {
 }
 
 # Celery Configuration Options
-CELERY_TIMEZONE = "Europe/Berlin"
+CELERY_TIMEZONE = config('CELERY_TIMEZONE', default='Europe/Berlin')
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'default'
 CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
-AMQP_PORT = '5672'
-AMQP_HOST = 'localhost'
+# Non heroku AMQP e.g. Local one, used if AMQP_URL environment variable on Heroku is not configured
+OTHER_AMQP_PORT = config('OTHER_AMQP_PORT', default='5672')
+OTHER_AMQP_HOST = config('OTHER_AMQP_HOST', default='localhost')
+OTHER_AMQP_URL = 'amqp://' + OTHER_AMQP_HOST + ':' + OTHER_AMQP_PORT + '//'
 # for Heroku
-CELERY_BROKER_URL = os.environ.get('AMQP_URL', 'amqp://' + AMQP_HOST + ':' + AMQP_PORT + '//')
+CELERY_BROKER_URL = config('AMQP_URL', default=OTHER_AMQP_URL)
+
+
+if config('USE_S3', default=True, cast=bool):
+    # aws settings
+    AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
+    AWS_DEFAULT_ACL = None
+    AWS_S3_ADDRESSING_STYLE = "virtual"
+    AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+    AWS_S3_REGION_NAME='eu-central-1'
+    AWS_S3_SIGNATURE_VERSION = 's3v4'
+    # s3 static settings
+    AWS_STATIC_LOCATION = 'static'
+    STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_STATIC_LOCATION)
+    STATICFILES_STORAGE = 'lifeingermany.storage_backends.StaticStorage'
+    # s3 public media settings
+    AWS_PUBLIC_MEDIA_LOCATION = 'media/public'
+    MEDIA_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_PUBLIC_MEDIA_LOCATION)
+    DEFAULT_FILE_STORAGE = 'lifeingermany.storage_backends.PublicMediaStorage'
+    # s3 private media settings
+    AWS_PRIVATE_MEDIA_LOCATION = 'media/private'
+    PRIVATE_FILE_STORAGE = 'lifeingermany.storage_backends.PrivateMediaStorage'
+    
+else:
+    MEDIA_ROOT = BASE_DIR / 'media'
+    MEDIA_URL = "/media/"
+    
+    STATIC_ROOT = BASE_DIR / 'static'
+    STATIC_URL = "/static/"
+    
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'lifeingermany/static'),
+]
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt' : "%d/%b/%Y %H:%M:%S"
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'lifeingermany.log',
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers':['file'],
+            'propagate': True,
+            'level':'DEBUG',
+        },
+        'MYAPP': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+        },
+    }
+}
+
+# Heroku: Update database configuration from $DATABASE_URL. 
+import dj_database_url 
+db_from_env = dj_database_url.config(conn_max_age=500) 
+DATABASES['default'].update(db_from_env)
+
+
+# Activate Django-Heroku
+django_heroku.settings(locals())

@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import RegexValidator
 from django.utils import timezone
 import base64
+from lifeingermany.storage_backends import PrivateMediaStorage
 
 alphanumeric = RegexValidator(r'^[0-9a-zA-Z]*$', 'Only alphanumeric characters are allowed.')
 
@@ -10,7 +11,7 @@ alphanumeric = RegexValidator(r'^[0-9a-zA-Z]*$', 'Only alphanumeric characters a
 
 class StateIcon(models.Model):
     id = models.AutoField(primary_key=True)
-    path = models.ImageField(blank=False, null=False, upload_to='state_icons')
+    path = models.ImageField(blank=False, null=False, upload_to='state_icons', storage=PrivateMediaStorage())
     data_base64_string = models.TextField(editable=False)
     
     def save(self, *args, **kwargs):
@@ -26,7 +27,7 @@ class StateIcon(models.Model):
     
 class QuestionImage(models.Model):
     id = models.AutoField(primary_key=True)
-    path = models.ImageField(blank=False, null=False, upload_to='question_images')
+    path = models.ImageField(blank=False, null=False, upload_to='question_images', storage=PrivateMediaStorage())
     data_base64_string = models.TextField(editable=False)
     
     def save(self, *args, **kwargs):
