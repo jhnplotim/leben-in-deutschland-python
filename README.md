@@ -34,17 +34,21 @@ OR
 Without heroku, you can start each of them individually in two separate steps
 
 Start django application by running
-python manage runserver
+python manage.py runserver 8000 (locally)
+Or by pushing the master branch to heroku e.g.
+
+git push heroku main
 
 
-Start Celery through
+
+Start Celery through (local)
 celery -A lifeingermany worker -l INFO
 
 
 
 Run command to start Django interactive shell (Needed for executing Celery)
 python manage.py shell (without heroku or locally)
-heroku run python manage.py shell (with heroku)
+heroku run python manage.py shell (on heroku)
 
 
 Then in the shell write
@@ -53,3 +57,9 @@ from quickstart.tasks import populate_database
 
 Then write 
 populate_database.delay()
+
+
+Wait a few minutes while the task scrapes a few webpages to populate the database.
+
+
+Login into the admin panel of the application and view the populated data i.e. The 16 German States & their icons, The Questions and their answers.
