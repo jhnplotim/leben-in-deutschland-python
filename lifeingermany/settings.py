@@ -151,12 +151,12 @@ CELERY_TASK_TIME_LIMIT = 30 * 60
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'default'
 CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
-# Non heroku AMQP e.g. Local one, used if AMQP_URL environment variable on Heroku is not configured
-OTHER_AMQP_PORT = config('OTHER_AMQP_PORT', default='5672')
-OTHER_AMQP_HOST = config('OTHER_AMQP_HOST', default='localhost')
-OTHER_AMQP_URL = 'amqp://' + OTHER_AMQP_HOST + ':' + OTHER_AMQP_PORT + '//'
+# Non heroku AMQP e.g. Local one, used if CLOUDAMQP_URL environment variable on Heroku is not configured
+LOCALAMQP_PORT = config('LOCALAMQP_PORT', default='5672')
+LOCALAMQP_HOST = config('LOCALAMQP_HOST', default='localhost')
+LOCALAMQP_URL = 'amqp://' + LOCALAMQP_HOST + ':' + LOCALAMQP_PORT + '//'
 # for Heroku
-CELERY_BROKER_URL = config('AMQP_URL', default=OTHER_AMQP_URL)
+CELERY_BROKER_URL = config('CLOUDAMQP_URL', default=LOCALAMQP_URL)
 
 
 if config('USE_S3', default=True, cast=bool):
