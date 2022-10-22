@@ -26,6 +26,9 @@ NOTE: The cloud setting will override the local settings if present
 Start django + celery via heroku by running (without heroku)
 heroku local
 
+NOTE: In order to run heroku local without port issues on a Macbook, please update the Procfile web dyno as follows:
+web: gunicorn --bind 0.0.0.0:8000 lifeingermany.wsgi --log-file -
+
 OR
 
 Without heroku, you can start each of them individually in two separate steps
