@@ -20,17 +20,28 @@ Ensure you have the same runtime setup i.e. See runtime.txt
 Ensure you set up the Environment variables
 See the .env.example file for the environment variables you need to setup. Note, you do not have to AWS if you do not want.
 
+Ensure RabbitMQ is properly configured via the environment variable CLOUDAMQP_URL & CLOUDAMQP_APIKEY OR LOCALAMQP_HOST & LOCALAMQP_PORT if locally hosted & that it is running
+NOTE: The cloud setting will override the local settings if present
+
+Start django + celery via heroku by running (without heroku)
+heroku local
+
+OR
+
+Without heroku, you can start each of them individually in two separate steps
+
 Start django application by running
 python manage runserver
 
-Ensure RabbitMQ is properly configured via the environment variable CLOUDAMQP_URL & CLOUDAMQP_APIKEY OR LOCALAMQP_HOST & LOCALAMQP_PORT if locally hosted.
-NOTE: The cloud setting will override the local settings if present
 
 Start Celery through
-celery worker -A lifeingermany -l info
+celery -A lifeingermany worker -l INFO
+
+
 
 Run command to start Django interactive shell (Needed for executing Celery)
-python manage.py shell
+python manage.py shell (without heroku or locally)
+heroku run python manage.py shell (with heroku)
 
 
 Then in the shell write
