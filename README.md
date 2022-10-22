@@ -27,7 +27,7 @@ Ensure RabbitMQ is properly configured via the environment variable CLOUDAMQP_UR
 NOTE: The cloud setting will override the local settings if present
 
 Start Celery through
-celery worker -A lifeingermany -l info -c 4
+celery worker -A lifeingermany -l info
 
 Run command to start Django interactive shell (Needed for executing Celery)
 python manage.py shell
