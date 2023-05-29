@@ -159,35 +159,12 @@ LOCALAMQP_URL = 'amqp://' + LOCALAMQP_HOST + ':' + LOCALAMQP_PORT + '//'
 CELERY_BROKER_URL = config('CLOUDAMQP_URL', default=LOCALAMQP_URL)
 
 
-if config('USE_S3', default=True, cast=bool):
-    # aws settings
-    AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
-    AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
-    AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
-    AWS_DEFAULT_ACL = None
-    AWS_S3_ADDRESSING_STYLE = "virtual"
-    AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
-    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
-    AWS_S3_REGION_NAME='eu-central-1'
-    AWS_S3_SIGNATURE_VERSION = 's3v4'
-    # s3 static settings
-    AWS_STATIC_LOCATION = 'static'
-    STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_STATIC_LOCATION)
-    STATICFILES_STORAGE = 'lifeingermany.storage_backends.StaticStorage'
-    # s3 public media settings
-    AWS_PUBLIC_MEDIA_LOCATION = 'media/public'
-    MEDIA_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_PUBLIC_MEDIA_LOCATION)
-    DEFAULT_FILE_STORAGE = 'lifeingermany.storage_backends.PublicMediaStorage'
-    # s3 private media settings
-    AWS_PRIVATE_MEDIA_LOCATION = 'media/private'
-    PRIVATE_FILE_STORAGE = 'lifeingermany.storage_backends.PrivateMediaStorage'
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = "/media/"
     
-else:
-    MEDIA_ROOT = BASE_DIR / 'media'
-    MEDIA_URL = "/media/"
+STATIC_ROOT = BASE_DIR / 'static'
+STATIC_URL = "/static/"
     
-    STATIC_ROOT = BASE_DIR / 'static'
-    STATIC_URL = "/static/"
     
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'lifeingermany/static'),
