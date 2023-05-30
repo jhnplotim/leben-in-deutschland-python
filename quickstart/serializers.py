@@ -27,11 +27,13 @@ class AnswerSerializer(serializers.ModelSerializer):
         fields = ['id', 'text', 'isCorrect']
 
 class QuestionSerializer(serializers.ModelSerializer):
+    imageAsBase64 = serializers.CharField(source='image.data_base64_string' , required=False)
+    stateId = serializers.IntegerField(source='state.id', required=False)
     title = serializers.CharField(source='text')
     answers = AnswerSerializer(source='answer_set', many=True)  
     class Meta:
         model = Question
-        fields = ['id', 'title', 'image', 'state', "answers"]
+        fields = ['id', 'title', 'imageAsBase64', 'stateId', "answers"]
         
 class QuestionImageSerializer(serializers.ModelSerializer):
     class Meta:
