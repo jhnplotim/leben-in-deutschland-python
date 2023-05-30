@@ -20,15 +20,18 @@ class StateSerializer(serializers.ModelSerializer):
         fields = ['id', 'url', 'name', 'code', 'icon', 'added']
 
 class AnswerSerializer(serializers.ModelSerializer):
+    isCorrect = serializers.BooleanField(source='is_correct')
+    
     class Meta:
         model = Answer
-        fields = ['id', 'text', 'is_correct', 'question']
+        fields = ['id', 'text', 'isCorrect']
 
 class QuestionSerializer(serializers.ModelSerializer):
+    title = serializers.CharField(source='text')
     answers = AnswerSerializer(source='answer_set', many=True)  
     class Meta:
         model = Question
-        fields = ['id', 'text', 'image', 'state', "answers"]
+        fields = ['id', 'title', 'image', 'state', "answers"]
         
 class QuestionImageSerializer(serializers.ModelSerializer):
     class Meta:
