@@ -1,5 +1,5 @@
 from django.contrib import admin
-from quickstart.models import State, Question, Answer, QuestionImage, StateIcon
+from quickstart.models import State, Question, Answer, QuestionImage, StateIcon, Category
 from django.utils.html import format_html
 
 # Register your models here.
@@ -35,7 +35,7 @@ class QuestionAdmin(admin.ModelAdmin):
     inlines = [AnswerInline]
 
 
-class QuestionInline(admin.StackedInline):
+class QuestionInline(admin.TabularInline):
     model = Question
 
 
@@ -101,4 +101,9 @@ class QuestionImageAdmin(admin.ModelAdmin):
     img_name.short_description = 'Name'
     
     list_display = ['img_name', 'scheme_image_tag']
+    
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name']
+    inlines = [QuestionInline]
     

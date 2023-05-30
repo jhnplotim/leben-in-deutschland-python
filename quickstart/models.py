@@ -22,7 +22,7 @@ class StateIcon(models.Model):
         return super(StateIcon, self).save(*args, **kwargs)
     
     def __str__(self):
-        return f'{self.path.name}'
+        return f'({self.id}) - {self.path.name}'
     
 class QuestionImage(models.Model):
     id = models.AutoField(primary_key=True)
@@ -38,7 +38,7 @@ class QuestionImage(models.Model):
         return super(QuestionImage, self).save(*args, **kwargs)
     
     def __str__(self):
-        return f'{self.path.name}'
+        return f'({self.id}) - {self.path.name}'
     
 class State(models.Model):
     id = models.AutoField(primary_key=True)
@@ -48,7 +48,14 @@ class State(models.Model):
     added = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return f'{self.name}'
+        return f'({self.id}) - {self.name}({self.code})'
+    
+class Category(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.TextField(blank=False, null=False)
+    
+    def __str__(self):
+        return f'({self.id}) - {self.name}'
 
 
 class Question(models.Model):
@@ -56,9 +63,10 @@ class Question(models.Model):
     text = models.TextField(blank=False, null=False)
     image = models.ForeignKey(QuestionImage, on_delete=models.SET_NULL, blank=True, null=True, default=None)
     state = models.ForeignKey(State, on_delete=models.CASCADE, blank=True, null=True, default=None)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True, default=None)
 
     def __str__(self):
-        return f'{self.text}'
+        return f'({self.id}) - {self.text}'
 
     def set_image(self, image):
         self.image = image
@@ -74,7 +82,7 @@ class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, null=False, blank=False)
 
     def __str__(self):
-        return f'{self.text}'
+        return f'({self.id}) - {self.text}'
 
     def set_is_correct(self, is_correct):
         self.is_correct = is_correct

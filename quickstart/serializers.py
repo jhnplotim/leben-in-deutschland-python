@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User, Group
-from quickstart.models import State, StateIcon, Answer, Question, QuestionImage
+from quickstart.models import State, StateIcon, Answer, Question, QuestionImage, Category
 from rest_framework import serializers
 
 
@@ -30,10 +30,11 @@ class QuestionSerializer(serializers.ModelSerializer):
     imageAsBase64 = serializers.CharField(source='image.data_base64_string' , required=False)
     stateId = serializers.IntegerField(source='state.id', required=False)
     title = serializers.CharField(source='text')
-    answers = AnswerSerializer(source='answer_set', many=True)  
+    answers = AnswerSerializer(source='answer_set', many=True)
+    categoryId = serializers.IntegerField(source='category.id', required=False)
     class Meta:
         model = Question
-        fields = ['id', 'title', 'imageAsBase64', 'stateId', "answers"]
+        fields = ['id', 'title', 'imageAsBase64', 'stateId', 'answers', 'categoryId']
         
 class QuestionImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -45,5 +46,10 @@ class StateIconSerializer(serializers.ModelSerializer):
     class Meta:
         model = StateIcon
         fields = ['id', 'data_base64_string']
+    
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'name']
 
 
